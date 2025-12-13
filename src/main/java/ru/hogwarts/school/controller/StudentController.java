@@ -49,8 +49,11 @@ public class StudentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delStudentById(@PathVariable @Min(value = 1, message = "{student.id.min}") Long id) {
-        studentService.delete(id);
-        return ResponseEntity.ok().build();
+        if (studentService.delete(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/age/{age}")

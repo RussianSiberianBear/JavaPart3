@@ -43,8 +43,13 @@ public class FacultyService {
                 });
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public boolean delete(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Collection<Faculty> getAllFaculties() {

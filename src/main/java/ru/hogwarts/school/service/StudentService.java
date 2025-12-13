@@ -44,8 +44,13 @@ public class StudentService {
     }
 
 
-    public void delete(long id) {
-        repository.deleteById(id);
+    public boolean delete(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Collection<Student> getAllStudents() {
