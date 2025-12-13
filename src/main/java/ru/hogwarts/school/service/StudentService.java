@@ -18,7 +18,6 @@ public class StudentService {
     }
 
     public Student create(Student student) {
-        return repository.save(student);
     }
 
     public Optional<Student> read(Long id) {
@@ -26,7 +25,6 @@ public class StudentService {
     }
 
     public Student update(Student student) {
-        return repository.save(student);
      }
 
     public void delete(long id) {

@@ -18,7 +18,6 @@ public class FacultyService {
     }
 
     public Faculty create(Faculty faculty) {
-        return repository.save(faculty);
     }
 
     public Optional<Faculty> read(Long id) {
@@ -26,7 +25,6 @@ public class FacultyService {
     }
 
     public Faculty update(Faculty faculty) {
-        return repository.save(faculty);
     }
 
     public void delete(Long id) {
