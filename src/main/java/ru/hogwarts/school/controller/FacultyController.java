@@ -4,12 +4,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.CreateFacultyDTO;
-import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.FacultyDTO;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Optional;
@@ -27,13 +26,13 @@ public class FacultyController {
     }
 
     @PostMapping
-    public Faculty createFaculty(@Valid @RequestBody CreateFacultyDTO facultyDTO) {
-        return facultyService.create(toCreateEntity(facultyDTO));
+    public FacultyDTO createFaculty(@Valid @RequestBody CreateFacultyDTO dto) {
+        return facultyService.create(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getFacultyById(@PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
-        Optional<Faculty> faculty = facultyService.read(id);
+        Optional<FacultyDTO> faculty = facultyService.read(id);
         if (faculty.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -41,14 +40,12 @@ public class FacultyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Faculty> updateFaculty(
+    public ResponseEntity<FacultyDTO> updateFaculty(
             @PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id,
-            @Valid @RequestBody CreateFacultyDTO facultyDTO) {
-        Faculty editFaculty = facultyService.update(toUpdateEntity(id, facultyDTO));
-        if (editFaculty == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        return ResponseEntity.ok(editFaculty);
+            @Valid @RequestBody CreateFacultyDTO dto) {
+        return facultyService.update(id, dto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
@@ -66,14 +63,8 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getAllFacultyByColor(color));
     }
 
-    private Faculty toCreateEntity(CreateFacultyDTO facultyDTO) {
-        Faculty f = new Faculty();
-        f.setName(facultyDTO.getName());
-        f.setColor(facultyDTO.getColor());
-        return f;
-    }
-
-    private Faculty toUpdateEntity(Long id, CreateFacultyDTO facultyDTO) {
-        return new Faculty(id, facultyDTO.getName(), facultyDTO.getColor());
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllFaculties() {
+        return ResponseEntity.ok(facultyService.getAllFaculties());
     }
 }

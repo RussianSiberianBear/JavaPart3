@@ -2,7 +2,11 @@ package ru.hogwarts.school.service;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.hogwarts.school.mapper.StudentMapper;
+import ru.hogwarts.school.model.CreateStudentDTO;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentDTO;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
@@ -12,22 +16,33 @@ import java.util.Optional;
 public class StudentService {
 
     private final StudentRepository repository;
+    private final StudentMapper mapper;
 
-    public StudentService(StudentRepository repository) {
+    public StudentService(StudentMapper mapper, StudentRepository repository) {
+        this.mapper = mapper;
         this.repository = repository;
     }
 
-    public Student create(Student student) {
-        return repository.save(student);
+    public StudentDTO create(CreateStudentDTO dto) {
+        Student student = mapper.toEntity(dto);
+        student = repository.save(student);
+        return mapper.toDto(student);
     }
 
-    public Optional<Student> read(Long id) {
-        return repository.findById(id);
+    public Optional<StudentDTO> read(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDto);
     }
 
-    public Student update(Student student) {
-        return repository.save(student);
-     }
+    @Transactional
+    public Optional<StudentDTO> update(Long id, CreateStudentDTO dto) {
+        return repository.findById(id)
+                .map(student -> {
+                    mapper.updateStudentFromDto(dto, student);
+                    return mapper.toDto(student);
+                });
+    }
+
 
     public void delete(long id) {
         repository.deleteById(id);
