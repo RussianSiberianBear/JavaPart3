@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.CreateFacultyDTO;
-import ru.hogwarts.school.model.FacultyDTO;
+import ru.hogwarts.school.model.FacultyFromDto;
+import ru.hogwarts.school.model.FacultyToDto;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Optional;
@@ -26,13 +26,13 @@ public class FacultyController {
     }
 
     @PostMapping
-    public FacultyDTO createFaculty(@Valid @RequestBody CreateFacultyDTO dto) {
+    public FacultyToDto createFaculty(@Valid @RequestBody FacultyFromDto dto) {
         return facultyService.create(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getFacultyById(@PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
-        Optional<FacultyDTO> faculty = facultyService.read(id);
+        Optional<FacultyToDto> faculty = facultyService.read(id);
         if (faculty.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -40,9 +40,9 @@ public class FacultyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FacultyDTO> updateFaculty(
+    public ResponseEntity<FacultyToDto> updateFaculty(
             @PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id,
-            @Valid @RequestBody CreateFacultyDTO dto) {
+            @Valid @RequestBody FacultyFromDto dto) {
         return facultyService.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

@@ -7,12 +7,12 @@ import ru.hogwarts.school.model.*;
 @Mapper(componentModel = "spring")
 public interface FacultyMapper {
 
-    Faculty toEntity(CreateFacultyDTO dto);
+    Faculty toEntity(FacultyFromDto dto);
 
-    FacultyDTO toDto(Faculty faculty);
+    FacultyToDto toDto(Faculty faculty);
 
     void updateFacultyFromDto(
-            CreateFacultyDTO dto,
+            FacultyFromDto dto,
             @MappingTarget Faculty faculty
     );
 }

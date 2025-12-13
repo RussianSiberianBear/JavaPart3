@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.CreateStudentDTO;
-import ru.hogwarts.school.model.StudentDTO;
+import ru.hogwarts.school.model.StudentFromDto;
+import ru.hogwarts.school.model.StudentToDto;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Optional;
@@ -25,13 +25,13 @@ public class StudentController {
     }
 
     @PostMapping
-    public StudentDTO createStudent(@Valid @RequestBody CreateStudentDTO dto) {
+    public StudentToDto createStudent(@Valid @RequestBody StudentFromDto dto) {
         return studentService.create(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable @Min(value = 1, message = "{student.id.min}") Long id) {
-        Optional<StudentDTO> student = studentService.read(id);
+        Optional<StudentToDto> student = studentService.read(id);
         if (student.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -39,9 +39,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentDTO> updateStudent(
+    public ResponseEntity<StudentToDto> updateStudent(
             @PathVariable @Min(value = 1, message = "{student.id.min}") Long id,
-            @Valid @RequestBody CreateStudentDTO dto) {
+            @Valid @RequestBody StudentFromDto dto) {
         return studentService.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

@@ -2,13 +2,13 @@ package ru.hogwarts.school.model;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class CreateFacultyDTO {
+public class FacultyFromDto {
     @NotBlank(message = "{faculty.name.notblank}")
     private String name;
     @NotBlank(message = "{faculty.color.notblank}")
     private String color;
 
-    public CreateFacultyDTO(String name, String color) {
+    public FacultyFromDto(String name, String color) {
         this.name = name;
         this.color = color;
     }

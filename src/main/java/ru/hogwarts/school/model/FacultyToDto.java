@@ -1,8 +1,8 @@
 package ru.hogwarts.school.model;
 
-public record StudentDTO(
+public record FacultyToDto(
         Long id,
         String name,
-        String family,
-        int age
+        String color
 ) {}
+

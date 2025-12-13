@@ -3,7 +3,7 @@ package ru.hogwarts.school.model;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
-public class CreateStudentDTO {
+public class StudentFromDto {
     @NotBlank(message = "{student.name.notblank}")
     private String name;
 
@@ -13,7 +13,7 @@ public class CreateStudentDTO {
     @Min(value = 18, message = "{student.age.min18}")
     private int age;
 
-    public CreateStudentDTO(String name, String family, int age) {
+    public StudentFromDto(String name, String family, int age) {
         this.name = name;
         this.family = family;
         this.age = age;
