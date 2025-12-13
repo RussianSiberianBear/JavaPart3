@@ -51,8 +51,11 @@ public class FacultyController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFaculty(
             @PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
-        this.facultyService.delete(id);
-        return ResponseEntity.ok().build();
+        if (facultyService.delete(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/color/{color}")
