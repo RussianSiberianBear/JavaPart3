@@ -43,7 +43,6 @@ public class StudentService {
                 });
     }
 
-
     public boolean delete(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
