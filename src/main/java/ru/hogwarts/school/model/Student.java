@@ -74,7 +74,7 @@ public class Student {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return student.id.equals(id) && age == student.age && Objects.equals(name, student.name) && Objects.equals(family, student.family);
+        return age == student.age && Objects.equals(id, student.id) && Objects.equals(name, student.name) && Objects.equals(family, student.family);
     }
 
     @Override
