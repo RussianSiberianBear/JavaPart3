@@ -1,16 +1,21 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.mapper.FacultyMapper;
 import ru.hogwarts.school.model.FacultyFromDto;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.FacultyToDto;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FacultyService {
@@ -63,5 +68,15 @@ public class FacultyService {
         return repository.findByColor(color, Sort.by(
                 Sort.Order.asc("name")
         ));
+    }
+
+    public Collection<Faculty> getAllFacultyByNameOrByColor(String name, String color) {
+        return repository.findByNameContainingIgnoreCaseOrColorContainingIgnoreCase(name, color);
+    }
+
+    public Collection<String> getAllStudentsByFacultyId(Long facultyId) {
+        Faculty faculty = repository.findById(facultyId).orElseThrow(() -> new FacultyNotFoundException(facultyId));
+        Collection<Student> students =  faculty.getStudents();
+        return students.stream().map(student -> student.toString()).collect(Collectors.toList());
     }
 }

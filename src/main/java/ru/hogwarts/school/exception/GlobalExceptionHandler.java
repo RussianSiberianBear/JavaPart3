@@ -78,6 +78,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
 
+    @ExceptionHandler(FacultyNotFoundException.class)
+    public ResponseEntity<ApiError> handleFacultyNotFound(FacultyNotFoundException ex, HttpServletRequest request, Locale locale) {
+        ApiError err = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                //messageSource.getMessage("error.404.faculty", null, locale),
+                ex.getMessage(),
+                ApiErrorCode.RESOURCE_NOT_FOUND,
+                null,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+    }
+
     // Общий fallback — чтобы ничего не ускользало (при этом в лог уходит stacktrace)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request, Locale locale) {
