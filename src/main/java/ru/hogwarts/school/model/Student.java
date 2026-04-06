@@ -14,10 +14,9 @@ public class Student {
     private String family;
     private int age;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="faculty_id", nullable = false)
     private Faculty faculty;
-
 
     public Student() {
     }

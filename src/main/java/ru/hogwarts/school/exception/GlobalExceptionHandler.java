@@ -83,7 +83,6 @@ public class GlobalExceptionHandler {
         ApiError err = new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
-                //messageSource.getMessage("error.404.faculty", null, locale),
                 ex.getMessage(),
                 ApiErrorCode.RESOURCE_NOT_FOUND,
                 null,
