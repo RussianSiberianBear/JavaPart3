@@ -3,6 +3,7 @@ package ru.hogwarts.school.service;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.mapper.StudentMapper;
 import ru.hogwarts.school.model.StudentFromDto;
 import ru.hogwarts.school.model.Student;
@@ -11,6 +12,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -67,4 +69,35 @@ public class StudentService {
                 Sort.Order.desc("age")
         ));
     }
+
+    public Collection<Student> getAllStudentsByAgeBetween(int ageMin, int ageMax) {
+        return repository.findByAgeBetween(ageMin, ageMax, Sort.by(
+                Sort.Order.asc("family"),
+                Sort.Order.asc("name"),
+                Sort.Order.desc("age")
+        ));
+    }
+
+    public Collection<String> getFacultyNameByStudentName(String name) {
+        Collection<Student> students;
+        students = repository.findByNameIgnoreCase(name, Sort.by(
+                Sort.Order.asc("family"),
+                Sort.Order.asc("name")));
+
+        return students
+                .stream()
+                .map(student -> student.getFaculty().getName())  // Из студента получаем его факультет и берем name
+                .collect(Collectors.toList());
+    }
+
+    public Collection<String> findByFacultyColorContainingIgnoreCase(String color) {
+        Collection<Student> students = repository.findByFacultyColorContainingIgnoreCase(color, Sort.by(
+                Sort.Order.asc("name")));
+        if (students.isEmpty()) {
+            throw new FacultyNotFoundException(color);
+        }
+
+        return students.stream().map(student -> student.toString()).collect(Collectors.toList());
+    }
+
 }

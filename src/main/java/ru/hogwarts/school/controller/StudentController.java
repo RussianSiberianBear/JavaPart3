@@ -2,7 +2,9 @@ package ru.hogwarts.school.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +66,27 @@ public class StudentController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllStudents() {
         return ResponseEntity.ok(studentService.getAllStudents());
+    }
+
+    @GetMapping("/age")
+    public ResponseEntity<?> getStudentsByAgeBetween(
+            @RequestParam(value = "min")
+            @Min(value = 10, message = "{student.age.min10}") int min,
+
+            @RequestParam(value = "max")
+            @Max(value = 24, message = "{student.age.max24}") int max) {
+
+        return ResponseEntity.ok(studentService.getAllStudentsByAgeBetween(min, max));
+    }
+
+    @GetMapping("/faculty/{name}")
+    public ResponseEntity<?> getStudentsByAge(@PathVariable @Size(min = 3, message = "{student.name.min3}") String name) {
+        return ResponseEntity.ok(studentService.getFacultyNameByStudentName(name));
+    }
+
+    @GetMapping("/students/{color}")
+    public ResponseEntity<?> getStudentsByFacultyColor(@PathVariable @Size(min = 3, message = "{faculty.color.min3}") String color) {
+        return ResponseEntity.ok(studentService.findByFacultyColorContainingIgnoreCase(color));
     }
 
 }

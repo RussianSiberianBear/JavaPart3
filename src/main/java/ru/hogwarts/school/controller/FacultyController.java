@@ -70,4 +70,18 @@ public class FacultyController {
     public ResponseEntity<?> getAllFaculties() {
         return ResponseEntity.ok(facultyService.getAllFaculties());
     }
+
+    @GetMapping("/findByNameOrByColor/{nameOrColor}")
+    public ResponseEntity<?> getFacultiesByNameOrByColor(
+            @PathVariable
+            @Size(min = 1, message = "{faculty.nameOrColor.notblank}")
+            String nameOrColor) {
+        return ResponseEntity.ok(facultyService.getAllFacultyByNameOrByColor(nameOrColor, nameOrColor));
+    }
+
+    @GetMapping("/students/{id}")
+    public ResponseEntity<?> getStudentsByFacultyId(@PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
+        return ResponseEntity.ok(facultyService.getAllStudentsByFacultyId(id));
+    }
+
 }
