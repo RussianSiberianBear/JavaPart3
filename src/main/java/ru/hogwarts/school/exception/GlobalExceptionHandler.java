@@ -91,6 +91,32 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
 
+    @ExceptionHandler(InvalidFileSizeException.class)
+    public ResponseEntity<ApiError> handleInvalidFileSize(Exception ex, HttpServletRequest request, Locale locale){
+        ApiError err = new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                ApiErrorCode.VALIDATION_FAILED,
+                null,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<ApiError> handleStudentNotFound(Exception ex, HttpServletRequest request, Locale locale){
+        ApiError err = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                ApiErrorCode.RESOURCE_NOT_FOUND,
+                null,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
     // Общий fallback — чтобы ничего не ускользало (при этом в лог уходит stacktrace)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request, Locale locale) {
@@ -105,4 +131,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
     }
+
+
 }

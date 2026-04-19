@@ -19,6 +19,11 @@ public class StudentFromDto {
         this.age = age;
     }
 
+    public StudentFromDto() {
+    }
+
+
+
     public String getName() {
         return this.name;
     }

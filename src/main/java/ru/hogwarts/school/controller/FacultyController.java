@@ -31,12 +31,11 @@ public class FacultyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFacultyById(@PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
+    public ResponseEntity<?> getFacultyById(
+            @PathVariable @Min(value = 1, message = "{faculty.id.min}") Long id) {
         Optional<FacultyToDto> faculty = facultyService.read(id);
-        if (faculty.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(faculty);
+        return faculty.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")

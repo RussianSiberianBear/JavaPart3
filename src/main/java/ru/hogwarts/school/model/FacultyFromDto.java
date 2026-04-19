@@ -13,6 +13,9 @@ public class FacultyFromDto {
         this.color = color;
     }
 
+    public FacultyFromDto() {
+    }
+
     public String getName() {
         return name;
     }
