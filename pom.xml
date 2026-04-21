@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>school</name>
-    <description>Skypro JAVA Part3 HomeWorks</description>
+    <description>Skypro JAVA Part4 HomeWorks</description>
     <url/>
     <licenses>
         <license/>
@@ -72,6 +72,12 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>22.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

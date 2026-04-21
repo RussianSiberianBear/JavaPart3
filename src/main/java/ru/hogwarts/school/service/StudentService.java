@@ -172,4 +172,17 @@ public class StudentService {
         ImageIO.write(resizedImage, getExtension(filePath.getFileName().toString()), os);
         return os.toByteArray();
     }
+
+    public String countStudents(){
+        return repository.countStudents();
+    }
+
+    public String avgAgeStudents(){
+        return repository.avgAgeStudents();
+    }
+
+    public Collection<StudentToDto>getLast5Student(){
+        Collection<Student> students = repository.find5LastStudents();
+        return students.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
 }

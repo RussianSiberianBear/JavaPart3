@@ -108,4 +108,18 @@ public class StudentController {
 
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<?> getCountStudent() {
+        return ResponseEntity.ok(studentService.countStudents());
+    }
+
+    @GetMapping("/avgage")
+    public ResponseEntity<?> getAvgAgeStudent() {
+        return ResponseEntity.ok(studentService.avgAgeStudents());
+    }
+
+    @GetMapping("/get5last")
+    public ResponseEntity<?> getLast5Students() {
+        return ResponseEntity.ok(studentService.getLast5Student());
+    }
 }
