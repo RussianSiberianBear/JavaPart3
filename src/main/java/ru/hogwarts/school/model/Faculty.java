@@ -16,7 +16,7 @@ public class Faculty {
     private String color;
 
     @OneToMany(mappedBy = "faculty")
-    private Collection<Student> students = new ArrayList<>();
+    private final Collection<Student> students = new ArrayList<>();
 
     public Faculty() {
     }
@@ -75,4 +75,5 @@ public class Faculty {
     public int hashCode() {
         return Objects.hash(id, name, color);
     }
+
 }

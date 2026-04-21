@@ -1,16 +1,12 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.mapper.FacultyMapper;
-import ru.hogwarts.school.model.FacultyFromDto;
-import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.FacultyToDto;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.mapper.StudentMapper;
+import ru.hogwarts.school.model.*;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
@@ -22,10 +18,13 @@ public class FacultyService {
 
     private final FacultyRepository repository;
     private final FacultyMapper mapper;
+    private final StudentMapper studentMapper;
 
-    public FacultyService(FacultyRepository repository, FacultyMapper mapper) {
+
+    public FacultyService(FacultyRepository repository, FacultyMapper mapper, StudentMapper studentMapper) {
         this.repository = repository;
         this.mapper = mapper;
+        this.studentMapper = studentMapper;
     }
 
     public FacultyToDto create(FacultyFromDto dto) {
@@ -57,26 +56,27 @@ public class FacultyService {
         }
     }
 
-    public Collection<Faculty> getAllFaculties() {
-        return repository.findAll(Sort.by(
+    public Collection<FacultyToDto> getAllFaculties() {
+        Collection<Faculty> faculties = repository.findAll(Sort.by(
                 Sort.Order.asc("name"),
                 Sort.Order.asc("color")
         ));
+        return  faculties.stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
-    public Collection<Faculty> getAllFacultyByColor(String color) {
-        return repository.findByColor(color, Sort.by(
-                Sort.Order.asc("name")
-        ));
+    public Optional<FacultyToDto> getAllFacultyByColor(String color) {
+        return repository.findByColorContainingIgnoreCase(color)
+                .map(mapper::toDto);
     }
 
-    public Collection<Faculty> getAllFacultyByNameOrByColor(String name, String color) {
-        return repository.findByNameContainingIgnoreCaseOrColorContainingIgnoreCase(name, color);
+    public Collection<FacultyToDto> getAllFacultyByNameOrByColor(String name, String color) {
+        return repository.findByNameContainingIgnoreCaseOrColorContainingIgnoreCase(name, color)
+                .stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
-    public Collection<String> getAllStudentsByFacultyId(Long facultyId) {
+    public Collection<StudentToDto> getAllStudentsByFacultyId(Long facultyId) {
         Faculty faculty = repository.findById(facultyId).orElseThrow(() -> new FacultyNotFoundException(facultyId));
-        Collection<Student> students =  faculty.getStudents();
-        return students.stream().map(student -> student.toString()).collect(Collectors.toList());
+        Collection<Student> students = faculty.getStudents();
+        return students.stream().map(studentMapper::toDto).collect(Collectors.toList());
     }
 }

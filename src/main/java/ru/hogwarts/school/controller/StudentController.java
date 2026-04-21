@@ -5,13 +5,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.hogwarts.school.exception.InvalidFileSizeException;
 import ru.hogwarts.school.model.StudentFromDto;
 import ru.hogwarts.school.model.StudentToDto;
 import ru.hogwarts.school.service.StudentService;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -80,13 +84,28 @@ public class StudentController {
     }
 
     @GetMapping("/faculty/{name}")
-    public ResponseEntity<?> getStudentsByAge(@PathVariable @Size(min = 3, message = "{student.name.min3}") String name) {
+    public ResponseEntity<?> getFacultyNameByStudentName(@PathVariable @Size(min = 3, message = "{student.name.min3}") String name) {
         return ResponseEntity.ok(studentService.getFacultyNameByStudentName(name));
     }
 
     @GetMapping("/students/{color}")
     public ResponseEntity<?> getStudentsByFacultyColor(@PathVariable @Size(min = 3, message = "{faculty.color.min3}") String color) {
-        return ResponseEntity.ok(studentService.findByFacultyColorContainingIgnoreCase(color));
+        return ResponseEntity.ok(studentService.findStudentsByFacultyColorContainingIgnoreCase(color));
+    }
+
+    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAvatar(@PathVariable Long id, @RequestParam MultipartFile avatar) throws IOException {
+
+        if (avatar.getSize() > 1024 *300){
+           throw new InvalidFileSizeException("Размер файла не должен превышать 300КБ");
+        }
+
+        if (studentService.uploadAvatar(id, avatar)) {
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
 }
