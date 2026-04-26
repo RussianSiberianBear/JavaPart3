@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,9 @@ public class StudentService {
     private String avatarsDir;
     private final StudentRepository repository;
     private final AvatarRepository avatarRepository;
-
     private final StudentMapper mapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     public StudentService(StudentMapper mapper, StudentRepository repository, AvatarRepository avatarRepository) {
         this.mapper = mapper;
@@ -44,18 +47,21 @@ public class StudentService {
     }
 
     public StudentToDto create(StudentFromDto dto) {
+        logger.info("Was invoked method for create student");
         Student student = mapper.toEntity(dto);
         student = repository.save(student);
         return mapper.toDto(student);
     }
 
     public Optional<StudentToDto> read(Long id) {
+        logger.info("Was invoked method for read student");
         return repository.findById(id)
                 .map(mapper::toDto);
     }
 
     @Transactional
     public Optional<StudentToDto> update(Long id, StudentFromDto dto) {
+        logger.info("Was invoked method for update student");
         return repository.findById(id)
                 .map(student -> {
                     mapper.updateStudentFromDto(dto, student);
@@ -64,16 +70,18 @@ public class StudentService {
     }
 
     public boolean delete(Long id) {
+        logger.info("Was invoked method for delete student");
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
         } else {
+            logger.error("There is not student with id = " + id);
             return false;
         }
     }
 
     public Collection<StudentToDto> getAllStudents() {
-
+        logger.info("Was invoked method for getAllStudents");
         Collection<Student> students = repository.findAll(Sort.by(
                 Sort.Order.asc("family"),
                 Sort.Order.asc("name"),
@@ -84,6 +92,7 @@ public class StudentService {
     }
 
     public Collection<StudentToDto> getAllStudentsByAge(int age) {
+        logger.info("Was invoked method for getAllStudentsByAge age={}",age);
         Collection<Student> students = repository.findByAge(age, Sort.by(
                 Sort.Order.asc("family"),
                 Sort.Order.asc("name"),
@@ -93,6 +102,7 @@ public class StudentService {
     }
 
     public Collection<StudentToDto> getAllStudentsByAgeBetween(int ageMin, int ageMax) {
+        logger.info("Was invoked method for getAllStudentsByAgeBetween ageMin={}, ageMax={}", ageMin, ageMax);
         Collection<Student> students = repository.findByAgeBetween(ageMin, ageMax, Sort.by(
                 Sort.Order.asc("family"),
                 Sort.Order.asc("name"),
@@ -102,6 +112,7 @@ public class StudentService {
     }
 
     public Collection<String> getFacultyNameByStudentName(String name) {
+        logger.info("Was invoked method for getFacultyNameByStudentName student name = " + name);
         Collection<Student> students;
         students = repository.findByNameIgnoreCase(name, Sort.by(
                 Sort.Order.asc("family"),
@@ -114,9 +125,11 @@ public class StudentService {
     }
 
     public Collection<StudentToDto> findStudentsByFacultyColorContainingIgnoreCase(String color) {
+        logger.info("Was invoked method for findStudentsByFacultyColorContainingIgnoreCase color=" + color);
         Collection<Student> students = repository.findByFacultyColorContainingIgnoreCase(color, Sort.by(
                 Sort.Order.asc("name")));
         if (students.isEmpty()) {
+            logger.error("There is not student with faculty  = " + color);
             throw new FacultyNotFoundException(color);
         }
 
@@ -125,14 +138,22 @@ public class StudentService {
 
     @Transactional
     public Avatar findAvatar(long studentId) {
-        return avatarRepository.findByStudentId(studentId).orElseThrow(() -> new StudentNotFoundException("Аватар с таким id студента не найден!"));
+        Optional<Avatar> avatar = avatarRepository.findByStudentId(studentId);
+        if (avatar.isEmpty()) {
+            logger.error("There is not avatar with studentId = " + studentId);
+            throw new StudentNotFoundException("Аватар с таким id студента не найден!");
+        }
+        return avatar.get();
     }
 
     @Transactional
     public boolean uploadAvatar(Long studentId, MultipartFile file) throws IOException {
-
+        logger.info("Was invoked method for uploadAvatar studentId =" + studentId);
         Student student = repository.findById(studentId).orElse(null);
-        if (student == null) return false;
+        if (student == null) {
+            logger.error("There is not student with id = " + studentId);
+            return false;
+        }
 
         Path filePath = Path.of(avatarsDir, studentId + "." + getExtension(file.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
@@ -156,13 +177,16 @@ public class StudentService {
         avatarRepository.save(avatar);
         return true;
     }
+
     private String getExtension(String fileName) {
+        logger.info("Was invoked method for getExtension filename = " + fileName);
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
     private byte[] generateImagePreview(Path filePath) throws IOException {
+        logger.info("Was invoked method for generateImagePreview " + filePath.toString());
         BufferedImage bufferedImage = ImageIO.read(filePath.toFile());
-        int height = bufferedImage.getHeight()/(bufferedImage.getWidth()/100);
+        int height = bufferedImage.getHeight() / (bufferedImage.getWidth() / 100);
         int width = 100;
         BufferedImage resizedImage = new BufferedImage(width, height, bufferedImage.getType());
         Graphics2D g2d = resizedImage.createGraphics();
@@ -173,15 +197,18 @@ public class StudentService {
         return os.toByteArray();
     }
 
-    public String countStudents(){
+    public String countStudents() {
+        logger.info("Was invoked method for countStudents");
         return repository.countStudents();
     }
 
-    public String avgAgeStudents(){
+    public String avgAgeStudents() {
+        logger.info("Was invoked method for avgAgeStudents");
         return repository.avgAgeStudents();
     }
 
-    public Collection<StudentToDto>getLast5Student(){
+    public Collection<StudentToDto> getLast5Student() {
+        logger.info("Was invoked method for getLast5Student");
         Collection<Student> students = repository.find5LastStudents();
         return students.stream().map(mapper::toDto).collect(Collectors.toList());
     }

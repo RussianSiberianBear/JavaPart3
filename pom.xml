@@ -11,7 +11,7 @@
     <groupId>ru.hogwarts</groupId>
     <artifactId>school</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>school</name>
     <description>Skypro JAVA Part4 HomeWorks</description>
     <url/>
