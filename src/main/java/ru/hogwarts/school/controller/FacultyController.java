@@ -83,4 +83,13 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getAllStudentsByFacultyId(id));
     }
 
+    @GetMapping("/getLongestFacultyName")
+    public ResponseEntity<String> getLongestFacultyName() {
+        return ResponseEntity.ok(facultyService.getLongestFacultyName());
+    }
+
+    @GetMapping("/getSum")
+    public ResponseEntity<?> getSum() {
+        return ResponseEntity.ok(facultyService.getSum());
+    }
 }

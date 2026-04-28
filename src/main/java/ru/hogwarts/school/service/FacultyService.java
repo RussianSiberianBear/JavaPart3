@@ -12,8 +12,11 @@ import ru.hogwarts.school.model.*;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Integer.max;
 
 @Service
 public class FacultyService {
@@ -102,5 +105,26 @@ public class FacultyService {
         }
         Collection<Student> students = faculty.get().getStudents();
         return students.stream().map(studentMapper::toDto).collect(Collectors.toList());
+    }
+
+    public String getLongestFacultyName() {
+        Collection<Faculty> faculties = repository.findAll();
+        // Думаю, что здесь параллельный стрим не оправдан, так как
+        // факультетов не так много в жизни в учебных заведениях
+        String faculty = faculties
+                .stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("");
+
+        return faculty;
+    }
+
+    public long getSum(){
+       // Задание: улучшить int sum = Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b );
+
+        return (1000000L * (1000000L + 1))/ 2;
+        // а ещё лучше сразу вернуть :-)
+        // return 500000500000
     }
 }
