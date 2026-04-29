@@ -122,4 +122,14 @@ public class StudentController {
     public ResponseEntity<?> getLast5Students() {
         return ResponseEntity.ok(studentService.getLast5Student());
     }
+
+    @GetMapping("/startNameWithAandSorting")
+    public ResponseEntity<?> getAllStudentsWithStartnameWithAandSorting() {
+        return ResponseEntity.ok(studentService.getAllStudentsWithStartnameWithAandSorting());
+    }
+
+    @GetMapping("/newMethodAvgAge")
+    public ResponseEntity<?> getNewMethodAvgAgeStudent() {
+        return ResponseEntity.ok(studentService.newMethodAvgAgeStudents());
+    }
 }

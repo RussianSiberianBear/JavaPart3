@@ -24,6 +24,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -212,4 +213,30 @@ public class StudentService {
         Collection<Student> students = repository.find5LastStudents();
         return students.stream().map(mapper::toDto).collect(Collectors.toList());
     }
+
+    public Collection<String> getAllStudentsWithStartnameWithAandSorting() {
+        logger.info("Was invoked method for startNameWithAandSorting");
+        Collection<Student> students = repository.findAll();
+        var а = students
+                .parallelStream()
+                .map(s -> s.getName().toUpperCase())
+                .filter(n -> n.startsWith("А"))
+                .sorted()
+                .toList();
+        return а;
+    }
+
+    public int newMethodAvgAgeStudents() {
+        Collection<Student> students = repository.findAll();
+        // Думаю, что тут не оправдан параллелизм, так как тут по сути всего пара операций-
+        // суммирование возраста и деление на количество студентов и выигрыш может быть
+        // на очень большом кол-ве студентов
+        int аvgAge = (int) students
+                .stream()
+                .mapToInt(Student::getAge)
+                .average().orElse(0);
+
+        return аvgAge;
+    }
+
 }
