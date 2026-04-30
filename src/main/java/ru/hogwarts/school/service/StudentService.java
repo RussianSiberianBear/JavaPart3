@@ -23,9 +23,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -38,6 +39,9 @@ public class StudentService {
     private final StudentRepository repository;
     private final AvatarRepository avatarRepository;
     private final StudentMapper mapper;
+
+    private ArrayList<Student> students = new ArrayList<>();
+    Object ready = new Object();
 
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
@@ -93,7 +97,7 @@ public class StudentService {
     }
 
     public Collection<StudentToDto> getAllStudentsByAge(int age) {
-        logger.info("Was invoked method for getAllStudentsByAge age={}",age);
+        logger.info("Was invoked method for getAllStudentsByAge age={}", age);
         Collection<Student> students = repository.findByAge(age, Sort.by(
                 Sort.Order.asc("family"),
                 Sort.Order.asc("name"),
@@ -238,5 +242,82 @@ public class StudentService {
 
         return аvgAge;
     }
+
+    public Collection<StudentToDto> getParallelStudentName() {
+        logger.info("Was invoked method for getPallelStudentName");
+
+        ArrayList<Student> students = new ArrayList<>();
+
+        Student student = repository.findById(1L).get();
+        System.out.println(student);
+        students.add(student);
+
+        student = repository.findById(2L).get();
+        System.out.println(student);
+        students.add(student);
+
+        new Thread(() -> {
+            Student student1 = repository.findById(3L).get();
+            System.out.println(student1);
+            students.add(student1);
+            student1 = repository.findById(4L).get();
+            System.out.println(student1);
+            students.add(student1);
+        }
+        ).start();
+
+        new Thread(() -> {
+            Student student1 = repository.findById(5L).get();
+            System.out.println(student1);
+            students.add(student1);
+            student1 = repository.findById(6L).get();
+            System.out.println(student1);
+            students.add(student1);
+        }
+        ).start();
+
+        return students.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
+
+    private void synchPrintStudent(Student student) {
+        synchronized (ready) {
+            System.out.println(student);
+            this.students.add(student);
+        }
+    }
+
+    public Collection<StudentToDto> getSynchronizedStudentName() {
+        logger.info("Was invoked method for getSynchronizedStudentName");
+
+        ThreadGroup threadGroup = new ThreadGroup("MyThreadGroup");
+
+        synchPrintStudent(repository.findById(1L).get());
+        synchPrintStudent(repository.findById(2L).get());
+
+        new Thread(threadGroup, () -> {
+            synchPrintStudent(repository.findById(3L).get());
+            synchPrintStudent(repository.findById(4L).get());
+        }
+        ).start();
+
+        new Thread(threadGroup, () -> {
+            synchPrintStudent(repository.findById(5L).get());
+            synchPrintStudent(repository.findById(6L).get());
+        }
+        ).start();
+
+        // Ждем завершения всех потоков
+        while (threadGroup.activeCount() > 0) {
+            try {
+                Thread.sleep(100);  // небольшая задержка
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return this.students.stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+
 
 }
