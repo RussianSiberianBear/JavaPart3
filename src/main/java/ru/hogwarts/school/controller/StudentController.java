@@ -11,12 +11,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.exception.InvalidFileSizeException;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.model.StudentFromDto;
 import ru.hogwarts.school.model.StudentToDto;
 import ru.hogwarts.school.service.StudentService;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student")
@@ -131,5 +134,15 @@ public class StudentController {
     @GetMapping("/newMethodAvgAge")
     public ResponseEntity<?> getNewMethodAvgAgeStudent() {
         return ResponseEntity.ok(studentService.newMethodAvgAgeStudents());
+    }
+
+    @GetMapping("/print-parallel")
+    public ResponseEntity<?> getParallelStudentName() {
+        return ResponseEntity.ok(studentService.getParallelStudentName());
+    }
+
+    @GetMapping("/print-synchronized")
+    public ResponseEntity<?> getSynchronizedStudentName() {
+        return ResponseEntity.ok(studentService.getSynchronizedStudentName());
     }
 }
